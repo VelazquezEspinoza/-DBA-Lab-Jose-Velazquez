@@ -1,0 +1,67 @@
+[
+  {
+    "op": "query",
+    "ns": "comercial.clientes",
+    "command": {
+      "filter": {
+        "ciudad": "Culiacán"
+      }
+    },
+    "ts": {
+      "$date": "2026-11-07T04:00:09.631Z"
+    },
+    "client": "127.0.0.1",
+    "appName": "app-ventas-web",
+    "user": "app_ventas@comercial"
+  },
+  {
+    "op": "update",
+    "ns": "comercial.clientes",
+    "command": {
+      "q": {
+        "_id": 3
+      },
+      "u": {
+        "$set": {
+          "rfc": "GAMA780912XYZ"
+        }
+      }
+    },
+    "ts": {
+      "$date": "2026-11-07T04:00:09.636Z"
+    },
+    "client": "127.0.0.1",
+    "appName": "app-ventas-web",
+    "user": "app_ventas@comercial"
+  },
+  {
+    "op": "remove",
+    "ns": "comercial.clientes",
+    "command": {
+      "q": {
+        "_id": 2
+      }
+    },
+    "ts": {
+      "$date": "2026-11-07T04:00:09.639Z"
+    },
+    "client": "127.0.0.1",
+    "appName": "app-ventas-web",
+    "user": "app_ventas@comercial"
+  },
+  {
+    "op": "query",
+    "ns": "comercial.system.profile",
+    "command": {
+      "filter": {
+        "ns": "comercial.clientes"
+      }
+    },
+    "ts": {
+      "$date": "2026-11-07T04:00:10.802Z"
+    },
+    "client": "127.0.0.1",
+    "appName": "mongosh 2.14.1",
+    "user": "admin@admin"
+  }
+]
