@@ -1,0 +1,14 @@
+# POL-06 — Cambios en producción
+
+| Campo | Contenido |
+|---|---|
+| **Pregunta que responde** | ¿Qué debe ocurrir antes, durante y después de un cambio en el ambiente de producción? |
+| **Objetivo** | Reducir el riesgo de cambios no autorizados, no probados o no rastreables en estructura, privilegios, configuración o controles de las bases de producción (casos observados: `ADD COLUMN segmento`, `GRANT UPDATE` a `app_ventas` y `DISABLE TRIGGER trg_auditoria_clientes` sin folio). |
+| **Alcance** | **Ambiente de producción**, según la definición de la Unidad I: el ambiente que soporta la operación real de la organización, con datos reales de clientes, separado de desarrollo (donde se construye) y de pruebas (donde se valida antes de liberar). Aplica a las bases `comercial` de PostgreSQL 16 y MongoDB 7: DDL, privilegios y roles, configuración del servidor (incluida la de bitácoras), disparadores y correcciones masivas de datos. *(Ajusta la definición a la redacción exacta de tu Unidad I.)* |
+| **Regla** | **Antes:** todo cambio tiene un folio en `gobierno.solicitudes_cambio` con `ambiente = 'produccion'`, aprobado por el Comité de cambios (y por el propietario del dato si afecta sus datos o accesos), con una ventana definida; si es de estructura, se probó antes en el ambiente de pruebas. **Durante:** el DBA ejecuta solo lo descrito en el folio, dentro de `ventana_inicio`–`ventana_fin`, con `log_statement` en `ddl` o `mod`. **Después:** una persona distinta de quien ejecutó concilia **mensualmente** la bitácora de `CREATE/ALTER/DROP/GRANT/REVOKE` con los folios; todo cambio sin folio o fuera de ventana se reporta como hallazgo y no se regulariza con folios retroactivos. |
+| **Responsable** | Aprueba: Comité de cambios (+ propietario del dato). Ejecuta: DBA. Concilia: Auditoría interna u otro administrador. |
+| **Excepciones** | Cambio de emergencia para restablecer el servicio: lo autoriza la Jefatura de TI; se registra un folio marcado como emergencia dentro de las 24 horas siguientes y se revisa en la siguiente sesión del Comité. **Nunca** se considera emergencia desactivar la auditoría (`DISABLE TRIGGER`, `log_statement = none`) sin aprobación de Auditoría interna. |
+| **Evidencia** | `gobierno.solicitudes_cambio` (CAT-03) + líneas `statement:` de la bitácora (`E5-bitacora-postgresql.log`) + tabla de conciliación (`evidencias/06-conciliacion.md`) + configuración de registro vigente (`E1-configuracion-registro.txt`). Ejemplo verificado: CAM-2026-014 ↔ línea 216. **Hoy no existe** evidencia de que los cambios se probaran antes en un ambiente de pruebas: los laboratorios usan un solo servidor. |
+| **Revisión** | Anual, o después de cualquier hallazgo de cambio no autorizado. |
+
+**Coherencia con otras políticas:** los cambios de privilegios cumplen además POL-01; las restauraciones sobre producción usan el mismo registro de folios (POL-04); desactivar controles sobre datos sensibles está prohibido por POL-05.
